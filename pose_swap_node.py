@@ -32,7 +32,7 @@ class SSSPoseSwap:
         use_clothing = image_count >= 3
         clothing_n = _clamp_image_number(clothing_image_number, image_count, "clothing_image_number") if use_clothing else None
 
-        parts = [f"there are {image_count} reference images provided"]
+        parts = []
         for i in range(1, image_count + 1):
             if i == char_n:
                 role = "the character, whose facial features, identity and body size/proportions must stay unchanged"

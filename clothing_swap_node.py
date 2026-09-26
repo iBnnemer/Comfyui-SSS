@@ -33,7 +33,6 @@ class SSSClothingSwap:
         parts = []
 
         if image_count > 1:
-            parts.append(f"there are {image_count} reference images provided")
             for i in range(1, image_count + 1):
                 if i == person_n:
                     role = "the person wearing the outfit to be replaced"

@@ -33,7 +33,6 @@ class SSSHeadSwap:
         parts = []
 
         if image_count > 1:
-            parts.append(f"there are {image_count} reference images provided")
             for i in range(1, image_count + 1):
                 if i == body_n:
                     role = "the canvas, whose body, pose and background stay unchanged"

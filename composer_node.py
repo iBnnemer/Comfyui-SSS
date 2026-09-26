@@ -109,7 +109,6 @@ class SSSFaceBodyComposer:
         # image gets an explicit role line up front, even when image_count
         # is 1 (harmless) or an image isn't used for face/body at all.
         if image_count > 1:
-            parts.append(f"there are {image_count} reference images provided")
             for i in range(1, image_count + 1):
                 roles = []
                 if i == face_n:
