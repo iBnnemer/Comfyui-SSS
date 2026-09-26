@@ -58,7 +58,7 @@ class SSSFaceBodyComposer:
             "required": {
                 "image_count": ("INT", {"default": 2, "min": 1, "max": 16}),
                 "face_image_number": ("INT", {"default": 1, "min": 1, "max": 16}),
-                "body_image_number": ("INT", {"default": 1, "min": 1, "max": 16}),
+                "body_image_number": ("INT", {"default": 2, "min": 1, "max": 16}),
                 "body_pose": (list(BODY_POSE_PROMPTS.keys()), {"default": "Standing Confidently"}),
                 "face_angle": (list(FACE_ANGLE_PROMPTS.keys()), {"default": "Front-facing"}),
                 "mood": (list(MOOD_PROMPTS.keys()), {"default": "Confident"}),
@@ -97,6 +97,23 @@ class SSSFaceBodyComposer:
         body_n = _clamp_image_number(body_image_number, image_count, "body_image_number")
 
         parts = []
+
+        # Qwen's own prompt-rewrite guide says to describe every referenced
+        # image individually rather than compressing them into a group -
+        # otherwise the model has no idea what an unmentioned image is for
+        # and may ignore it or blend it in unpredictably. So every connected
+        # image gets an explicit role line up front, even when image_count
+        # is 1 (harmless) or an image isn't used for face/body at all.
+        if image_count > 1:
+            parts.append(f"there are {image_count} reference images provided")
+            for i in range(1, image_count + 1):
+                roles = []
+                if i == face_n:
+                    roles.append("the face/identity reference")
+                if i == body_n:
+                    roles.append("the body pose/structure reference")
+                role_text = " and ".join(roles) if roles else "an additional reference, not used for face or body in this edit"
+                parts.append(f"image {i} is {role_text}")
 
         # Skin cleanup is called out first since it's the option the user
         # cares about most.
