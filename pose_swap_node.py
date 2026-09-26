@@ -32,20 +32,26 @@ class AAPoseSwap:
         use_clothing = image_count >= 3
         clothing_n = _clamp_image_number(clothing_image_number, image_count, "clothing_image_number") if use_clothing else None
 
-        # This exact phrasing (multiple short imperative sentences, "use
-        # imageN only as pose reference", listing body parts to follow) is
-        # what the user confirmed actually works for pose transfer - our
-        # earlier single comma-joined sentence left the head/face direction
-        # unchanged even though it named it.
+        # User-verified phrasing (community template): naming the kept
+        # attributes explicitly ("face, hairstyle, body proportions...")
+        # plus an explicit anti-copy line for the pose image (including
+        # "skeleton lines, or joint markers" for when it's an OpenPose-style
+        # reference) is what stopped the pose image's own face/head from
+        # leaking into the output - our previous version matched head
+        # direction correctly but copied image2's actual head.
+        keep_attrs = "face, hairstyle, body proportions, and overall visual style" if use_clothing else "face, hairstyle, body proportions, clothing design, and overall visual style"
         prompt = (
             f"use <image{char_n}> as the main character and scene. "
-            f"change the character's body pose and head/face direction to match the pose shown in <image{pose_n}>. "
-            f"use <image{pose_n}> only as pose reference. "
-            f"follow the visible positions of the arms, legs, torso, and head."
+            f"change the character's body pose to match the pose shown in <image{pose_n}>. "
+            f"use <image{pose_n}> only as a pose reference. follow the visible positions of the arms, legs, torso, and head. "
+            f"keep the character's {keep_attrs} from <image{char_n}>. "
         )
         if use_clothing:
-            prompt += f" put the outfit from <image{clothing_n}> on the character."
-        prompt += " preserve the original facial features and body size."
+            prompt += f"put the outfit from <image{clothing_n}> on the character. "
+        prompt += (
+            f"show one complete character in one continuous image. "
+            f"do not copy the person, clothing, background, skeleton lines, or joint markers from <image{pose_n}>."
+        )
 
         if extra_prompt:
             prompt += f" {extra_prompt.strip()}"
