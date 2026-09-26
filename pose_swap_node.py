@@ -32,16 +32,22 @@ class AAPoseSwap:
         use_clothing = image_count >= 3
         clothing_n = _clamp_image_number(clothing_image_number, image_count, "clothing_image_number") if use_clothing else None
 
-        # Kept to a single short sentence, mirroring Comfy-Org's own official
-        # Qwen 2.1 example prompt - a longer per-image role listing and
-        # repeated negations ("do not copy...") confuses the model more than
-        # it helps.
-        prompt = f"Change the pose of the character in <image{char_n}> to match the pose and face direction in <image{pose_n}>"
+        # This exact phrasing (multiple short imperative sentences, "use
+        # imageN only as pose reference", listing body parts to follow) is
+        # what the user confirmed actually works for pose transfer - our
+        # earlier single comma-joined sentence left the head/face direction
+        # unchanged even though it named it.
+        prompt = (
+            f"use <image{char_n}> as the main character and scene. "
+            f"change the character's body pose and head/face direction to match the pose shown in <image{pose_n}>. "
+            f"use <image{pose_n}> only as pose reference. "
+            f"follow the visible positions of the arms, legs, torso, and head."
+        )
         if use_clothing:
-            prompt += f", put the outfit from <image{clothing_n}> on the character"
-        prompt += ", preserve the original facial features and body size"
+            prompt += f" put the outfit from <image{clothing_n}> on the character."
+        prompt += " preserve the original facial features and body size."
 
         if extra_prompt:
-            prompt += f", {extra_prompt.strip()}"
+            prompt += f" {extra_prompt.strip()}"
 
         return (prompt,)
