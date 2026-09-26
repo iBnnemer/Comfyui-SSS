@@ -1,39 +1,34 @@
 # Comfyui-SSS
 
-ComfyUI custom nodes.
+Version 1.0.1
 
-## SSS Face/Body Composer
+Prompt-writing assistant nodes for **Text Encode Qwen Image 2.1**
+multi-reference-image edits. None of them touch images directly — you
+load and wire your reference images into the Qwen text-encode node
+yourself; each node only builds a ready-to-use `prompt` string, using
+`<image1>`, `<image2>`, ... to point at the reference image numbers
+(the same tag format Qwen's own official example prompts use).
 
-A prompt-writing assistant node for multi-reference-image editing with
-**Text Encode Qwen Image 2.1** (or Qwen-Image-Edit-Plus style nodes). It
-has no image inputs/outputs — you load and wire your reference images
-directly into the Qwen text-encode node yourself; this node only builds
-the `prompt` string.
+Category in ComfyUI: `AA`.
 
-Category in ComfyUI: `SSS`.
+## Nodes
 
-### Inputs
+- **AA Face/Body Composer** — builds a character-sheet style prompt: which image supplies the face, which supplies the body, pose/angle/mood/shot-type presets, skin cleanup, identity/body preservation, head-to-body proportion consistency, an optional plain studio background, and an optional fitted reference outfit.
+- **AA Clothing Swap** — puts the clothing from one reference image on the person in another.
+- **AA Face Swap** — replaces just the face on a body/pose canvas image.
+- **AA Head Swap** — replaces the whole head (face, hair, head shape) on a body/pose canvas image.
+- **AA Pose Swap** — the character keeps its own face/identity/body size, but adopts the body pose and face direction from a second reference image; an optional third image supplies clothing.
 
-- `image_count` — how many reference images you're connecting to the Qwen node (used to validate the numbers below).
-- `face_image_number` / `body_image_number` — which reference image (by number) supplies the face and which supplies the body.
-- `body_pose`, `face_angle`, `mood`, `shot_type` — dropdown presets describing the target image.
-- `clean_face_skin` — clears acne/blemishes from the face in the prompt.
-- `preserve_body_structure`, `preserve_face_identity` — keep the natural body structure / facial identity from their respective reference images.
-- `proportion_consistency` — asks for a natural head-to-body size ratio (no oversized head on a small body or vice versa).
-- `extra_prompt` (optional) — free text appended at the end.
+All of them share `image_count` (how many reference images you're connecting to the Qwen node) plus per-role `..._image_number` fields, and an optional `extra_prompt` free-text field appended at the end.
 
-### Output
-
-- `prompt` (STRING) — connect to the `prompt` input of `Text Encode Qwen Image 2.1`.
-
-### Why image numbers instead of descriptions
+## Why image numbers instead of descriptions
 
 Qwen's own prompt-rewrite guide recommends pointing at a reference image
 by its number rather than describing facial features in words — verbal
 descriptions make the model regenerate the face instead of copying it.
-This node builds sentences like *"image 1 is the identity anchor..."*
-using the same image numbering your reference images will have once
-wired into the Qwen text-encode node.
+These nodes build sentences like *"`<image1>` is the identity anchor..."*
+using the same numbering your reference images get once wired into the
+Qwen text-encode node's `image1`/`image2`/... inputs.
 
 ## Installation
 

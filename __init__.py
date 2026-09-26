@@ -1,22 +1,22 @@
-from .composer_node import SSSFaceBodyComposer
-from .clothing_swap_node import SSSClothingSwap
-from .face_swap_node import SSSFaceSwap
-from .head_swap_node import SSSHeadSwap
-from .pose_swap_node import SSSPoseSwap
+from .composer_node import AAFaceBodyComposer
+from .clothing_swap_node import AAClothingSwap
+from .face_swap_node import AAFaceSwap
+from .head_swap_node import AAHeadSwap
+from .pose_swap_node import AAPoseSwap
 
 NODE_CLASS_MAPPINGS = {
-    "SSSFaceBodyComposer": SSSFaceBodyComposer,
-    "SSSClothingSwap": SSSClothingSwap,
-    "SSSFaceSwap": SSSFaceSwap,
-    "SSSHeadSwap": SSSHeadSwap,
-    "SSSPoseSwap": SSSPoseSwap,
+    "AAFaceBodyComposer": AAFaceBodyComposer,
+    "AAClothingSwap": AAClothingSwap,
+    "AAFaceSwap": AAFaceSwap,
+    "AAHeadSwap": AAHeadSwap,
+    "AAPoseSwap": AAPoseSwap,
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "SSSFaceBodyComposer": "SSS Face/Body Composer",
-    "SSSClothingSwap": "SSS Clothing Swap",
-    "SSSFaceSwap": "SSS Face Swap",
-    "SSSHeadSwap": "SSS Head Swap",
-    "SSSPoseSwap": "SSS Pose Swap",
+    "AAFaceBodyComposer": "AA Face/Body Composer",
+    "AAClothingSwap": "AA Clothing Swap",
+    "AAFaceSwap": "AA Face Swap",
+    "AAHeadSwap": "AA Head Swap",
+    "AAPoseSwap": "AA Pose Swap",
 }
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]

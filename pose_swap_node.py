@@ -1,12 +1,12 @@
 def _clamp_image_number(value, image_count, label):
     if value < 1 or value > image_count:
         clamped = max(1, min(value, image_count))
-        print(f"[SSSPoseSwap] {label}={value} is out of range for image_count={image_count}; using {clamped} instead.")
+        print(f"[AAPoseSwap] {label}={value} is out of range for image_count={image_count}; using {clamped} instead.")
         return clamped
     return value
 
 
-class SSSPoseSwap:
+class AAPoseSwap:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -24,7 +24,7 @@ class SSSPoseSwap:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("prompt",)
     FUNCTION = "build_prompt"
-    CATEGORY = "SSS"
+    CATEGORY = "AA"
 
     def build_prompt(self, image_count, character_image_number, pose_image_number, clothing_image_number, extra_prompt=""):
         char_n = _clamp_image_number(character_image_number, image_count, "character_image_number")
@@ -46,6 +46,7 @@ class SSSPoseSwap:
 
         parts.append(f"<image{char_n}> is the canvas: preserve the exact facial features, identity and body size/proportions from <image{char_n}>, do not change them")
         parts.append(f"change the character's pose to match the pose in <image{pose_n}>: adopt the exact body pose and the face's direction/angle from <image{pose_n}>, but do not copy its facial features, identity, clothing or body size")
+        parts.append(f"the output shows only one person: the character from <image{char_n}> in this new pose, do not include the person from <image{pose_n}> in the output, do not show two people side by side")
 
         if use_clothing:
             parts.append(f"take the exact clothing/outfit from <image{clothing_n}> and put it on the character")

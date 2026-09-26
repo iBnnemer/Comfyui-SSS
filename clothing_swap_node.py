@@ -1,12 +1,12 @@
 def _clamp_image_number(value, image_count, label):
     if value < 1 or value > image_count:
         clamped = max(1, min(value, image_count))
-        print(f"[SSSClothingSwap] {label}={value} is out of range for image_count={image_count}; using {clamped} instead.")
+        print(f"[AAClothingSwap] {label}={value} is out of range for image_count={image_count}; using {clamped} instead.")
         return clamped
     return value
 
 
-class SSSClothingSwap:
+class AAClothingSwap:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -24,7 +24,7 @@ class SSSClothingSwap:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("prompt",)
     FUNCTION = "build_prompt"
-    CATEGORY = "SSS"
+    CATEGORY = "AA"
 
     def build_prompt(self, image_count, person_image_number, clothing_image_number, preserve_identity, extra_prompt=""):
         person_n = _clamp_image_number(person_image_number, image_count, "person_image_number")

@@ -46,12 +46,12 @@ MOOD_PROMPTS = {
 def _clamp_image_number(value, image_count, label):
     if value < 1 or value > image_count:
         clamped = max(1, min(value, image_count))
-        print(f"[SSSFaceBodyComposer] {label}={value} is out of range for image_count={image_count}; using {clamped} instead.")
+        print(f"[AAFaceBodyComposer] {label}={value} is out of range for image_count={image_count}; using {clamped} instead.")
         return clamped
     return value
 
 
-class SSSFaceBodyComposer:
+class AAFaceBodyComposer:
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -78,7 +78,7 @@ class SSSFaceBodyComposer:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("prompt",)
     FUNCTION = "build_prompt"
-    CATEGORY = "SSS"
+    CATEGORY = "AA"
 
     def build_prompt(
         self,
