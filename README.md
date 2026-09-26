@@ -1,6 +1,6 @@
 # Comfyui-SSS
 
-Version 1.0.1
+Version 1.0.4
 
 Prompt-writing assistant nodes for **Text Encode Qwen Image 2.1**
 multi-reference-image edits. None of them touch images directly — you
@@ -17,7 +17,7 @@ Category in ComfyUI: `AA`.
 - **AA Clothing Swap** — puts the clothing from one reference image on the person in another.
 - **AA Face Swap** — replaces just the face on a body/pose canvas image.
 - **AA Head Swap** — replaces the whole head (face, hair, head shape) on a body/pose canvas image.
-- **AA Pose Swap** — the character keeps its own face/identity/body size, but adopts the body pose and face direction from a second reference image; an optional third image supplies clothing.
+- **AA Pose Swap** — the character keeps its own face/identity/body size, but adopts the body pose from a second reference image; an optional third image supplies clothing.
 
 All of them share `image_count` (how many reference images you're connecting to the Qwen node) plus per-role `..._image_number` fields, and an optional `extra_prompt` free-text field appended at the end.
 
@@ -29,6 +29,49 @@ descriptions make the model regenerate the face instead of copying it.
 These nodes build sentences like *"`<image1>` is the identity anchor..."*
 using the same numbering your reference images get once wired into the
 Qwen text-encode node's `image1`/`image2`/... inputs.
+
+## AA Pose Swap: avoiding identity leakage from the pose reference photo
+
+Feeding a real photo of a different person straight in as the pose
+reference image and telling the model in the prompt not to copy that
+person's face is unreliable — a strong visual cue like a clear face in
+the reference image can outrank the instruction, and the output ends up
+with the *pose reference's* face instead of your character's.
+
+The reliable fix is to **convert the pose reference photo into a pose
+skeleton image first**, and use that skeleton (not the photo) as the
+pose reference image. A skeleton has no face, skin, or hair at all, so
+there is nothing for identity to leak from.
+
+Your ComfyUI install already has everything needed for this natively,
+no extra custom node package required:
+
+```
+LoadImage (pose reference photo)
+  → SDPoseKeypointExtractor  (needs a checkpoint from
+      https://huggingface.co/Comfy-Org/SDPose, ~1.9GB, in models/checkpoints)
+  → SDPoseDrawKeypoints      (draw_face=false recommended)
+  → this skeleton image is wired as image2 (or whichever number is the
+    pose reference) into Text Encode Qwen Image 2.1, instead of the
+    original photo
+```
+
+`AA Pose Swap`'s prompt already anticipates this — it explicitly says
+"do not copy the person, clothing, background, skeleton lines, or joint
+markers from `<imageN>`", which only makes sense once that image is a
+skeleton render rather than a photo. This has been verified end to end:
+the character's own face stays intact while the body adopts the
+skeleton's pose.
+
+## Verified working model set (Qwen Image 2.1, `qwen_image_2.1_int8_convrot`)
+
+If you're on the newer quantized Qwen 2.1 release, this is the
+combination confirmed to work (not every CLIP file in the picker is
+correct for this checkpoint):
+
+- VAE: `qwen_image_2.1_vae_bf16.safetensors`
+- CLIP: `qwen3vl_8b_int8_convrot.safetensors` (type: `qwen_image`)
+- UNET: `qwen\qwen2\qwen_image_2.1_int8_convrot.safetensors`
 
 ## Installation
 
