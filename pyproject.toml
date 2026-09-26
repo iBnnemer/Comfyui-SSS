@@ -1,6 +1,6 @@
 [project]
 name = "comfyui-sss-face-body-composer"
-version = "1.0.1"
+version = "1.0.2"
 description = "AA prompt-writing assistant nodes for Text Encode Qwen Image 2.1 multi-reference edits"
 license = { text = "MIT" }
 
