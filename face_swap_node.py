@@ -41,13 +41,13 @@ class SSSFaceSwap:
                     role = "the face reference"
                 else:
                     role = "an additional reference, not used in this edit"
-                parts.append(f"image {i} is {role}")
+                parts.append(f"<image{i}> is {role}")
 
-        parts.append(f"image {body_n} is the canvas: keep the body, pose, clothing and background from image {body_n} unchanged")
-        parts.append(f"replace the face in image {body_n} with the exact facial features and identity from image {face_n}, do not copy image {face_n}'s body or clothing")
+        parts.append(f"<image{body_n}> is the canvas: keep the body, pose, clothing and background from <image{body_n}> unchanged")
+        parts.append(f"replace the face in <image{body_n}> with the exact facial features and identity from <image{face_n}>, do not copy <image{face_n}>'s body or clothing")
 
         if preserve_body:
-            parts.append(f"preserve the natural body structure and proportions from image {body_n}")
+            parts.append(f"preserve the natural body structure and proportions from <image{body_n}>")
 
         if extra_prompt:
             parts.append(extra_prompt)

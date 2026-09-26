@@ -117,7 +117,7 @@ class SSSFaceBodyComposer:
                 if i == body_n:
                     roles.append("the body pose/structure reference")
                 role_text = " and ".join(roles) if roles else "an additional reference, not used for face or body in this edit"
-                parts.append(f"image {i} is {role_text}")
+                parts.append(f"<image{i}> is {role_text}")
 
         # Skin cleanup is called out first since it's the option the user
         # cares about most.
@@ -134,12 +134,12 @@ class SSSFaceBodyComposer:
         # prompt-rewrite guide warns verbal feature descriptions make the
         # model regenerate the face instead of copying it.
         if face_n == body_n and preserve_face_identity and preserve_body_structure:
-            parts.append(f"preserve the exact facial features, identity, natural body structure and proportions from image {face_n}")
+            parts.append(f"preserve the exact facial features, identity, natural body structure and proportions from <image{face_n}>")
         else:
             if preserve_face_identity:
-                parts.append(f"image {face_n} is the identity anchor: preserve the exact facial features and identity from image {face_n}")
+                parts.append(f"<image{face_n}> is the identity anchor: preserve the exact facial features and identity from <image{face_n}>")
             if preserve_body_structure:
-                parts.append(f"image {body_n} controls body pose and structure only: preserve the natural body structure and proportions from image {body_n}, but do not copy its face or identity")
+                parts.append(f"<image{body_n}> controls body pose and structure only: preserve the natural body structure and proportions from <image{body_n}>, but do not copy its face or identity")
 
         if proportion_consistency:
             parts.append("ensure the head and body are proportionally consistent with a natural human head-to-body size ratio; avoid an oversized head on a small body or an oversized body with a small head")

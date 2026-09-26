@@ -41,13 +41,13 @@ class SSSClothingSwap:
                     role = "the clothing reference"
                 else:
                     role = "an additional reference, not used in this edit"
-                parts.append(f"image {i} is {role}")
+                parts.append(f"<image{i}> is {role}")
 
-        parts.append(f"image {person_n} is the canvas: keep this person's face, body, pose and background unchanged")
-        parts.append(f"take the exact garment/outfit from image {clothing_n} and put it on the person in image {person_n}")
+        parts.append(f"<image{person_n}> is the canvas: keep this person's face, body, pose and background unchanged")
+        parts.append(f"take the exact garment/outfit from <image{clothing_n}> and put it on the person in <image{person_n}>")
 
         if preserve_identity:
-            parts.append(f"preserve the exact facial identity and body structure from image {person_n}, do not copy the face or body of image {clothing_n}")
+            parts.append(f"preserve the exact facial identity and body structure from <image{person_n}>, do not copy the face or body of <image{clothing_n}>")
 
         if extra_prompt:
             parts.append(extra_prompt)
