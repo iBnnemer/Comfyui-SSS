@@ -67,6 +67,8 @@ class SSSFaceBodyComposer:
                 "preserve_body_structure": ("BOOLEAN", {"default": True}),
                 "proportion_consistency": ("BOOLEAN", {"default": True}),
                 "preserve_face_identity": ("BOOLEAN", {"default": True}),
+                "neutral_studio_background": ("BOOLEAN", {"default": True}),
+                "reference_outfit": ("BOOLEAN", {"default": True}),
             },
             "optional": {
                 "extra_prompt": ("STRING", {"multiline": True, "default": ""}),
@@ -91,6 +93,8 @@ class SSSFaceBodyComposer:
         preserve_body_structure,
         proportion_consistency,
         preserve_face_identity,
+        neutral_studio_background,
+        reference_outfit,
         extra_prompt="",
     ):
         face_n = _clamp_image_number(face_image_number, image_count, "face_image_number")
@@ -139,6 +143,12 @@ class SSSFaceBodyComposer:
 
         if proportion_consistency:
             parts.append("ensure the head and body are proportionally consistent with a natural human head-to-body size ratio; avoid an oversized head on a small body or an oversized body with a small head")
+
+        if reference_outfit:
+            parts.append("the character wears a form-fitting solid-color athletic tank top that hugs the body and reveals the natural muscle and body contours and shadows, fully exposing both shoulders, paired with matching very short shorts in the same solid color")
+
+        if neutral_studio_background:
+            parts.append("remove the original background completely and replace it with a plain, seamless light gray, near-white studio backdrop, evenly and naturally lit with no visible shadow cast on the background")
 
         if extra_prompt:
             parts.append(extra_prompt)
