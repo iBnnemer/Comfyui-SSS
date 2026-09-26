@@ -1,6 +1,6 @@
 # Comfyui-SSS
 
-Version 1.0.4
+Version 1.1.0
 
 Prompt-writing assistant nodes for **Text Encode Qwen Image 2.1**
 multi-reference-image edits. None of them touch images directly — you
@@ -18,6 +18,7 @@ Category in ComfyUI: `AA`.
 - **AA Face Swap** — replaces just the face on a body/pose canvas image.
 - **AA Head Swap** — replaces the whole head (face, hair, head shape) on a body/pose canvas image.
 - **AA Pose Swap** — the character keeps its own face/identity/body size, but adopts the body pose from a second reference image; an optional third image supplies clothing.
+- **AA Camera Angle from 3D** — takes the `camera_info` output of ComfyUI's native `Load 3D (Advanced)` node and turns it into a `face_angle`-style descriptive sentence, computed from wherever you actually dragged the camera in the 3D viewport (plus raw azimuth/elevation degrees).
 
 All of them share `image_count` (how many reference images you're connecting to the Qwen node) plus per-role `..._image_number` fields, and an optional `extra_prompt` free-text field appended at the end.
 
@@ -72,6 +73,29 @@ correct for this checkpoint):
 - VAE: `qwen_image_2.1_vae_bf16.safetensors`
 - CLIP: `qwen3vl_8b_int8_convrot.safetensors` (type: `qwen_image`)
 - UNET: `qwen\qwen2\qwen_image_2.1_int8_convrot.safetensors`
+
+## AA Camera Angle from 3D: an interactive camera angle picker
+
+Instead of choosing a fixed angle from a dropdown, you can drag a real
+camera around a 3D model and read the exact angle you picked:
+
+1. Add ComfyUI's native **`Load 3D (Advanced)`** node and load any
+   humanoid model file (glb/obj/fbx/stl). A free, tiny test model is
+   `CesiumMan.glb` from Khronos Group's official glTF-Sample-Models
+   repository (CC-BY, ~479KB) — download it into
+   `ComfyUI/input/3d/CesiumMan.glb` and it shows up in the node's
+   `model_file` picker immediately.
+2. Drag inside the node's viewport to orbit the camera around the
+   model to whatever angle you want.
+3. Wire its `camera_info` output into **`AA Camera Angle from 3D`**.
+   Its `angle_description` output is a ready-to-use sentence (e.g.
+   *"the face photographed from a three-quarter angle turned to the
+   left, the camera is at eye level"*) you can drop into `extra_prompt`
+   on any of the other nodes, or use in place of the `face_angle`
+   dropdown. `azimuth_degrees`/`elevation_degrees` are also exposed raw.
+
+User-verified: the generated sentence matches the angle picked in the
+viewport.
 
 ## Installation
 
