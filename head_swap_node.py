@@ -30,26 +30,14 @@ class AAHeadSwap:
         body_n = _clamp_image_number(body_image_number, image_count, "body_image_number")
         head_n = _clamp_image_number(head_image_number, image_count, "head_image_number")
 
-        parts = []
-
-        if image_count > 1:
-            for i in range(1, image_count + 1):
-                if i == body_n:
-                    role = "the canvas, whose body, pose and background stay unchanged"
-                elif i == head_n:
-                    role = "the head reference"
-                else:
-                    role = "an additional reference, not used in this edit"
-                parts.append(f"<image{i}> is {role}")
-
-        parts.append(f"<image{body_n}> is the canvas: keep the body, pose, clothing and background from <image{body_n}> unchanged")
-        parts.append(f"replace the entire head, including face, hair and head shape, in <image{body_n}> with the exact head from <image{head_n}>, do not copy <image{head_n}>'s body or clothing")
-
+        # Single short sentence, same shape as Comfy-Org's own official
+        # Qwen 2.1 example prompt - keeps the model focused instead of
+        # scattering its attention over a long per-image role listing.
+        prompt = f"Keep the pose, clothing and background in <image{body_n}> unchanged, replace the head with the head from <image{head_n}>"
         if preserve_body:
-            parts.append(f"preserve the natural body structure and proportions from <image{body_n}>")
+            prompt += ", preserve the original body shape"
 
         if extra_prompt:
-            parts.append(extra_prompt)
+            prompt += f", {extra_prompt.strip()}"
 
-        prompt = ", ".join(p.strip() for p in parts if p and p.strip())
         return (prompt,)

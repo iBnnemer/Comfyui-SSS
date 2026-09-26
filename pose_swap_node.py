@@ -32,27 +32,16 @@ class AAPoseSwap:
         use_clothing = image_count >= 3
         clothing_n = _clamp_image_number(clothing_image_number, image_count, "clothing_image_number") if use_clothing else None
 
-        parts = []
-        for i in range(1, image_count + 1):
-            if i == char_n:
-                role = "the character, whose facial features, identity and body size/proportions must stay unchanged"
-            elif i == pose_n:
-                role = "the pose reference, providing the body pose and the face's direction/angle only"
-            elif use_clothing and i == clothing_n:
-                role = "the clothing reference"
-            else:
-                role = "an additional reference, not used in this edit"
-            parts.append(f"<image{i}> is {role}")
-
-        parts.append(f"<image{char_n}> is the canvas: preserve the exact facial features, identity and body size/proportions from <image{char_n}>, do not change them")
-        parts.append(f"change the character's pose to match the pose in <image{pose_n}>: adopt the exact body pose and the face's direction/angle from <image{pose_n}>, but do not copy its facial features, identity, clothing or body size")
-        parts.append(f"the output shows only one person: the character from <image{char_n}> in this new pose, do not include the person from <image{pose_n}> in the output, do not show two people side by side")
-
+        # Kept to a single short sentence, mirroring Comfy-Org's own official
+        # Qwen 2.1 example prompt - a longer per-image role listing and
+        # repeated negations ("do not copy...") confuses the model more than
+        # it helps.
+        prompt = f"Change the pose of the character in <image{char_n}> to match the pose and face direction in <image{pose_n}>"
         if use_clothing:
-            parts.append(f"take the exact clothing/outfit from <image{clothing_n}> and put it on the character")
+            prompt += f", put the outfit from <image{clothing_n}> on the character"
+        prompt += ", preserve the original facial features and body size"
 
         if extra_prompt:
-            parts.append(extra_prompt)
+            prompt += f", {extra_prompt.strip()}"
 
-        prompt = ", ".join(p.strip() for p in parts if p and p.strip())
         return (prompt,)

@@ -30,26 +30,14 @@ class AAClothingSwap:
         person_n = _clamp_image_number(person_image_number, image_count, "person_image_number")
         clothing_n = _clamp_image_number(clothing_image_number, image_count, "clothing_image_number")
 
-        parts = []
-
-        if image_count > 1:
-            for i in range(1, image_count + 1):
-                if i == person_n:
-                    role = "the person wearing the outfit to be replaced"
-                elif i == clothing_n:
-                    role = "the clothing reference"
-                else:
-                    role = "an additional reference, not used in this edit"
-                parts.append(f"<image{i}> is {role}")
-
-        parts.append(f"<image{person_n}> is the canvas: keep this person's face, body, pose and background unchanged")
-        parts.append(f"take the exact garment/outfit from <image{clothing_n}> and put it on the person in <image{person_n}>")
-
+        # Mirrors Comfy-Org's own official Qwen 2.1 example prompt almost
+        # word for word - a single short sentence works better than a
+        # per-image role listing, which just distracts the model.
+        prompt = f"Keep the character and pose in <image{person_n}> unchanged, put the outfit from <image{clothing_n}> on the character"
         if preserve_identity:
-            parts.append(f"preserve the exact facial identity and body structure from <image{person_n}>, do not copy the face or body of <image{clothing_n}>")
+            prompt += ", preserve the original facial features and body shape"
 
         if extra_prompt:
-            parts.append(extra_prompt)
+            prompt += f", {extra_prompt.strip()}"
 
-        prompt = ", ".join(p.strip() for p in parts if p and p.strip())
         return (prompt,)

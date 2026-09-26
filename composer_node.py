@@ -100,54 +100,33 @@ class AAFaceBodyComposer:
         face_n = _clamp_image_number(face_image_number, image_count, "face_image_number")
         body_n = _clamp_image_number(body_image_number, image_count, "body_image_number")
 
-        parts = []
-
-        # Qwen's own prompt-rewrite guide says to describe every referenced
-        # image individually rather than compressing them into a group -
-        # otherwise the model has no idea what an unmentioned image is for
-        # and may ignore it or blend it in unpredictably. So every connected
-        # image gets an explicit role line up front, even when image_count
-        # is 1 (harmless) or an image isn't used for face/body at all.
-        if image_count > 1:
-            for i in range(1, image_count + 1):
-                roles = []
-                if i == face_n:
-                    roles.append("the face/identity reference")
-                if i == body_n:
-                    roles.append("the body pose/structure reference")
-                role_text = " and ".join(roles) if roles else "an additional reference, not used for face or body in this edit"
-                parts.append(f"<image{i}> is {role_text}")
-
-        # Skin cleanup is called out first since it's the option the user
-        # cares about most.
-        if clean_face_skin:
-            parts.append("clean face's skin, no acne or blemishes")
+        # Kept short and direct, mirroring Comfy-Org's own official Qwen 2.1
+        # example prompt - a per-image role listing and long repeated
+        # qualifiers distract the model more than they help.
+        if face_n == body_n:
+            parts = [f"Use the character in <image{face_n}>"]
+        else:
+            parts = [f"Combine the face from <image{face_n}> with the body from <image{body_n}>"]
 
         parts.append(SHOT_TYPE_PROMPTS[shot_type])
         parts.append(FACE_ANGLE_PROMPTS[face_angle])
         parts.append(BODY_POSE_PROMPTS[body_pose])
         parts.append(MOOD_PROMPTS[mood])
 
-        # Pointing at the reference image number rather than describing
-        # features in words keeps identity from degrading - Qwen's own
-        # prompt-rewrite guide warns verbal feature descriptions make the
-        # model regenerate the face instead of copying it.
-        if face_n == body_n and preserve_face_identity and preserve_body_structure:
-            parts.append(f"preserve the exact facial features, identity, natural body structure and proportions from <image{face_n}>")
-        else:
-            if preserve_face_identity:
-                parts.append(f"<image{face_n}> is the identity anchor: preserve the exact facial features and identity from <image{face_n}>")
-            if preserve_body_structure:
-                parts.append(f"<image{body_n}> controls body pose and structure only: preserve the natural body structure and proportions from <image{body_n}>, but do not copy its face or identity")
+        if clean_face_skin:
+            parts.append("clean face's skin, no acne or blemishes")
+
+        if preserve_face_identity or preserve_body_structure:
+            parts.append("preserve the original facial features and body proportions")
 
         if proportion_consistency:
-            parts.append("ensure the head and body are proportionally consistent with a natural human head-to-body size ratio; avoid an oversized head on a small body or an oversized body with a small head")
+            parts.append("keep the head-to-body size ratio natural")
 
         if reference_outfit:
-            parts.append("the character wears a form-fitting solid-color athletic tank top that hugs the body and reveals the natural muscle and body contours and shadows, fully exposing both shoulders, paired with matching very short shorts in the same solid color")
+            parts.append("wearing a form-fitting solid-color athletic tank top with matching very short shorts, shoulders exposed")
 
         if neutral_studio_background:
-            parts.append("remove the original background completely and replace it with a plain, seamless light gray, near-white studio backdrop, evenly and naturally lit with no visible shadow cast on the background")
+            parts.append("plain light gray studio background, even natural lighting, no shadow")
 
         if extra_prompt:
             parts.append(extra_prompt)

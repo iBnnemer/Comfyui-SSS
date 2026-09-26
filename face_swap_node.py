@@ -30,26 +30,14 @@ class AAFaceSwap:
         body_n = _clamp_image_number(body_image_number, image_count, "body_image_number")
         face_n = _clamp_image_number(face_image_number, image_count, "face_image_number")
 
-        parts = []
-
-        if image_count > 1:
-            for i in range(1, image_count + 1):
-                if i == body_n:
-                    role = "the canvas, whose body, pose and background stay unchanged"
-                elif i == face_n:
-                    role = "the face reference"
-                else:
-                    role = "an additional reference, not used in this edit"
-                parts.append(f"<image{i}> is {role}")
-
-        parts.append(f"<image{body_n}> is the canvas: keep the body, pose, clothing and background from <image{body_n}> unchanged")
-        parts.append(f"replace the face in <image{body_n}> with the exact facial features and identity from <image{face_n}>, do not copy <image{face_n}>'s body or clothing")
-
+        # Single short sentence, same shape as Comfy-Org's own official
+        # Qwen 2.1 example prompt - keeps the model focused instead of
+        # scattering its attention over a long per-image role listing.
+        prompt = f"Keep the pose, clothing and background in <image{body_n}> unchanged, replace the face with the face from <image{face_n}>"
         if preserve_body:
-            parts.append(f"preserve the natural body structure and proportions from <image{body_n}>")
+            prompt += ", preserve the original body shape"
 
         if extra_prompt:
-            parts.append(extra_prompt)
+            prompt += f", {extra_prompt.strip()}"
 
-        prompt = ", ".join(p.strip() for p in parts if p and p.strip())
         return (prompt,)
